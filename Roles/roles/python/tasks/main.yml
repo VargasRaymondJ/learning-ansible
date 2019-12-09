@@ -1,0 +1,14 @@
+  -
+  # So, the python-pip package isn't included in the default CENTOS repo --> it's in the EPEL repo
+  # adding this repo 
+    name: add EPEL repository
+    yum_repository:
+      name: epel
+      description: EPEL YUM repo
+      baseurl: https://download.fedoraproject.org/pub/epel/$releasever/$basearch/
+  -
+    name: Install Python
+    yum: 
+      name: [epel-release, python, python-setuptools, python-devel, gcc, gcc-c++, kernel-devel, make, python-pip]
+      disable_gpg_check: yes 
+      state: installed

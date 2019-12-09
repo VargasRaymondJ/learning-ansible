@@ -1,0 +1,34 @@
+# This playbook is a heavily modified version of the playbook used in the initial demo.
+# Turns out I had to change it to make things run eventually.
+# This now installs the web server and all for a CENTOS server
+-
+  name: Deploy a web application on a single server
+  hosts: db_and_web_server1, db_and_web_server2
+  tasks:
+    -
+    # So, the python-pip package isn't included in the default CENTOS repo --> it's in the EPEL repo
+    # adding this repo 
+      name: add EPEL repository
+      yum_repository:
+        name: epel
+        description: EPEL YUM repo
+        baseurl: https://download.fedoraproject.org/pub/epel/$releasever/$basearch/
+      # become: yes
+    -
+      name: Install Python
+      yum: 
+        name: [epel-release, python, python-setuptools, python-devel, gcc, gcc-c++, kernel-devel, make, python-pip]
+        disable_gpg_check: yes 
+        state: installed
+
+      # Fun Fact, doing the yum installs with loops is deprecated and will be removed. 
+      # with_items:
+      #   - python
+      #   - python-setuptools
+      #   - python-dev 
+      #   - build-essential
+      #   - python-pip
+    - 
+      include: tasks/deploy_db.yml
+    -
+      include: tasks/deploy_web.yml

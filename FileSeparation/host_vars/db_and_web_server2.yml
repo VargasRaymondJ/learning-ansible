@@ -1,0 +1,6 @@
+# This would make sense if there were unique variables for each server. since they're the same for both, we're 
+# going to move these to a group var file and deal with them there
+
+# db_name: employee_db
+# db_user: db_user
+# db_password: Passw0rd

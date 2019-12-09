@@ -1,0 +1,35 @@
+---
+# tasks file for mysql_db
+  -
+    # CENTOS comes with MariaDB. It's the same shit
+    name: Install Mysql
+    yum: 
+      name: [mariadb-server, mariadb]
+      state: installed
+      disable_gpg_check: yes 
+  - 
+    name: Make sure pymysql is present
+    become: true # needed if the other tasks are not played as root
+    pip:
+      name: pymysql
+      state: present
+
+# After installing the mysql service, we need to make sure that the service is up and running
+  -
+    name: Ensure Mysql is up and running 
+    service: 
+      name: mariadb 
+      state: started
+      enabled: yes # when the server is restarted, the service will automatically start
+  -
+    name: Create Application Database
+    mysql_db:
+      name: "{{db_name}}"
+      state: present 
+  -
+    name: Create Database User
+    mysql_user:
+      name: "{{db_user}}"
+      password: "{{db_password}}"
+      priv: '*.*:ALL'
+      state: present

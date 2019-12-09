@@ -1,0 +1,21 @@
+
+  -
+    name: Install Python Flask Dependency 
+    pip:
+      name: [flask, flask-mysql]
+      # Fun Fact, doing the yum installs with loops is deprecated and will be removed. 
+      # with_items:
+      #   - flask 
+      #   - flask-mysql
+      state: present 
+  -
+    name: Copy source code
+    copy: 
+      src: ./app.py 
+      dest: /opt/app.py
+  - 
+    name: Start Web server
+    shell: FLASK_APP=/opt/app.py nohup flask run --host=0.0.0.0 &
+
+    
+

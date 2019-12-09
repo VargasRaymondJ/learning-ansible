@@ -1,0 +1,68 @@
+# This is the first playbook that the advanced course goes over. It sets up a web server. 
+# the packages aren't all correct -- he used a debian server, my hosts are all centOS servers
+# In the interest of time i am moving on and not correcting this. The playbook format is sound. 
+
+-
+  name: Deploy a web application on a single server
+  hosts: db_and_web_server1, db_and_web_server2
+  tasks:
+    -
+      name: Install Python
+      yum: 
+        name: [python, python-setuptools, python-devel, build-essential, python-pip] 
+        state: installed
+      # Fun Fact, doing the yum installs with loops is deprecated and will be removed. 
+      # with_items:
+      #   - python
+      #   - python-setuptools
+      #   - python-dev 
+      #   - build-essential
+      #   - python-pip
+    -
+      name: Install Mysql
+      yum: 
+        name: [mysql-server, mysql-client]
+        state: installed
+      # with_items:
+      #   - mysql-server
+      #   - mysql-client  
+
+# After installing the mysql service, we need to make sure that the service is up and running
+    -
+      name: Ensure Mysql is up and running 
+      service: 
+        name: mysql 
+        state: started
+        enabled: yes # when the server is restarted, the service will automatically start
+    -
+      name: Create Application Database
+      mysql_db:
+        name: employee_db
+        state: present 
+    -
+      name: Create Application Database
+      mysql_user:
+        name: db_user 
+        password: passw0rd
+        priv: '*.*:ALL'
+        state: present
+    -
+      name: Install Python Flask Dependency 
+      pip:
+        name: [flask, flask-mysql]
+        # Fun Fact, doing the yum installs with loops is deprecated and will be removed. 
+        # with_items:
+        #   - flask 
+        #   - flask-mysql
+        state: present 
+    -
+        name: Copy source code
+        copy: 
+          src: ./app.py 
+          dest: /opt/app.py
+    - 
+        name: Start Web server
+        shell: FLASK_APP=/opt/app.py nohup flask run --host=0.0.0.0 &
+    
+      
+
